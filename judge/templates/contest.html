@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load helpers %}
+
+{% block content %}
+
+<div class="row" id="contest-header">
+  <div class="col-md-8">
+    <h2>{{ contest.name }}</h2>
+  </div>
+  <div class="col-md-4">
+    <dl id="contest-times" class="dl-horizontal">
+        <dt>Contest Begins: </dt>
+        <dd>{{ contest.begin_at }}</dd>
+        <dt>Contest Ends: </dt>
+        <dd>{{ contest.end_at }}</dd>
+    </dl>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <h4>Problems</h4>
+    <div class="list-group">
+      {% if contest.has_begun %}
+        {% for problem in contest.problems.all %}
+        <a class="list-group-item" href="{% url 'problem_home' contest=problem.contest.slug slug=problem.slug %}">
+            {{ problem }}
+            
+            {% problem_score problem as score %}
+            <div class="progress problem-score-progress">
+                {% if score < 0 %}
+                <div class="progress-bar progress-not-attempted" role="progressbar"
+                    aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                  Not Attempted
+                </div>
+                {% else %}
+                <div class="progress-bar" role="progressbar"
+                    aria-valuenow="{{ score }}"
+                    aria-valuemin="0" aria-valuemax="100"
+                    style="width: {{ score|as_pct:100 }}%;">
+                  {{ score }} points
+                </div>
+                {% endif %}
+            </div>
+        </a>
+        {% endfor %}
+      {% else %}
+        <div class="jumbotron">
+            When the contest begins, problems will be listed here for you
+            to solve. Please be patient!<br>
+            The contest begins in <strong>{{ contest.begin_at|timeuntil }}</strong>.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-md-4">
+    <h4>Rules</h4>
+    <p>
+    {{ contest.description }}
+    </p>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Welcome</h2>
+
+{% if request.user.is_authenticated %}
+
+<h3>My Contests</h3>
+{% for contest in request.user.contests.all %}
+<a href="{% url 'contest_home' slug=contest.slug %}">{{ contest.name }}</a>
+{% endfor %}
+
+{% else %}
+
+You are not logged in.
+
+{% endif %}
+
+{% endblock %}

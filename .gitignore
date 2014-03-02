@@ -1,0 +1,9 @@
+# Intermediary files
+__pycache__/
+*.py[cod]
+*.swp
+
+# Local files
+db.sqlite3
+judge/secret/*
+judge/submissions/*

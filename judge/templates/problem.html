@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% load static from staticfiles %}
+{% load helpers %}
+
+{% block content %}
+<h2><a href="{% url "contest_home" slug=problem.contest.slug %}">
+    &larr; {{ problem.contest.name }}
+</a></h2>
+{% static problem.pdf_relative as pdf_url %}
+{% problem_score problem as score %}
+
+<div id="problem-header">
+    <h3><a href="{% url "problem_home" contest=problem.contest.slug slug=problem.slug %}">
+      {{ problem }} {% if score == problem.max_score %}
+      <span style="color: green">{% bootstrap_icon "ok" %}</span> {% endif %}
+    </a></h3>
+  <div id="problem-actions">
+    <a class="btn btn-default" href="{{ pdf_url }}">
+      {% bootstrap_icon "file" %} PDF
+    </a>
+    <a class="btn btn-default" href="{% url "problem_submissions" contest=problem.contest.slug slug=problem.slug %}">
+      {% bootstrap_icon "book" %} My Submissions
+    </a>
+    {% if attempt and attempt.status == 1 %}
+    <a class="btn btn-primary" href="{% url "problem_submit" contest=problem.contest.slug slug=problem.slug attempt_pk=attempt.id %}">
+      {% bootstrap_icon "dashboard" %} Attempt In Progress
+    </a>
+    {% else %}
+    <a class="btn btn-primary" href="{% url "problem_start_submit" contest=problem.contest.slug slug=problem.slug %}">
+      {% bootstrap_icon "cloud-upload" %} Solve
+    </a>
+    {% endif %}
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <span id="time-limit">Time Limit: {{ problem.time_limit }} seconds</span>
+    </div>
+    <div class="col-md-6" style="text-align: right;">
+      <span id="scores">
+          {% if score < 0 %}
+          Not Attempted &middot; Max Score: {{ problem.max_score }}pts
+          {% else %}
+          Your Score: <strong>{{ score }}pts</strong> &middot; Max Score: {{ problem.max_score }}pts
+          {% endif %}
+      </span>
+    </div>
+  </div>
+</div>
+
+{% block problem_content %}
+<iframe id="problem-view" src="{{ pdf_url }}"></iframe>
+{% endblock %}
+
+{% endblock %}

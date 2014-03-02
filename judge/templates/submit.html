@@ -1,0 +1,87 @@
+{% extends "problem.html" %}
+{% load bootstrap3 %}
+
+{% block problem_content %}
+
+<div class="row">
+  <div class="col-md-5">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3>Step 1: Grab your input file</h3>
+      </div>
+      <div class="panel-body" id="input-panel">
+          <a class="btn btn-lg btn-primary" href="{% url "problem_input_file" attempt_pk=attempt.id %}">
+            DOLWNLOAD INPUT
+          </a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-7">
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3>Step 2: Submit your solution</h3>
+          <div class="progress progress-striped active">
+            <div id="timer-progress" class="progress-bar progress-bar-success" role="progressbar"
+                style="width: 0%">
+            </div>
+          </div>
+          <div id="timer-wrapper">Time remaining: <span id="timer">-:--</span></div>
+        </div>
+        <div class="panel-body">
+          <div class="row">
+          {% bootstrap_field form.outputfile layout="horizontal" %}
+          </div>
+          <div class="row">
+          {% bootstrap_field form.sourcefile layout="horizontal" %}
+          </div>
+          <div class="row">
+            <div class="col-sm-6 col-sm-offset-2">
+              <input class="btn btn-primary" role="button" type="submit" value="Submit">
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="text/javascript">
+$(function() {
+    var timer = $("#timer");
+    var progress = $("#timer-progress");
+    var time_limit = {{ problem.time_limit }};
+    var clock = {{ attempt.time_passed }} - 1;
+
+    var tick;
+    tick = function() {
+        clock++;
+        var rem = time_limit - clock;
+        var pct = (100.0 * clock)/time_limit;
+        var mins = parseInt(rem / 60);
+        var secs = rem % 60;
+        $(timer).text(mins + ":" + (secs > 9 ? secs : "0" + secs));
+
+        $(progress).css("width", pct+"%");
+
+        if (pct > 70 && pct < 90) {
+            $(progress).removeClass('progress-bar-success')
+                       .addClass('progress-bar-warning');
+        } else if (pct > 90) {
+            $(progress).removeClass('progress-bar-warning')
+                       .addClass('progress-bar-danger');
+        }
+
+        if (rem > 0) {
+            window.setTimeout(tick, 1000);
+        } else {
+            $(progress).parent().removeClass('progress-striped active')
+        }
+    };
+
+    tick();
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "problem.html" %}
+{% load bootstrap3 %}
+
+{% block problem_content %}
+
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th>Time</th>
+      <th>Status</th>
+      <th>Score</th>
+      <th>Reason</th>
+    </tr>
+  </thead>
+  <tbodY>
+{% for attempt in attempts %}
+    <tr>
+      <td>{{ attempt.created_at|timesince }} ago</td>
+      <td>{{ attempt.get_status_display }}</td>
+      <td>{{ attempt.score }}</td>
+      <td>{{ attempt.get_reason_display }}</td>
+    </tr>
+{% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
