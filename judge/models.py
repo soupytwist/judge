@@ -106,6 +106,15 @@ class Attempt(models.Model):
         return os.path.join(settings.PROJECT_DIR, "secret", "inputs",
                 self.problem.slug, str(self.testfileid) + ".in")
 
+    def is_in_progress(self):
+        return self.status == 1
+
+    def is_accepted(self):
+        return self.status == 2
+
+    def is_rejected(self):
+        return self.status == 3
+
 class Clarification(models.Model):
     owner = models.ForeignKey(User)
     problem = models.ForeignKey(Problem, related_name="clarifications")

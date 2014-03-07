@@ -1,4 +1,4 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.views.generic import DetailView, ListView, CreateView, UpdateView
@@ -73,4 +73,39 @@ class ProblemSubmissions(DetailView):
         ctxt = super().get_context_data(**kwargs)
         myattempts = self.request.user.attempts.filter(problem=self.object).all()
         ctxt['attempts'] = myattempts
+        return ctxt
+
+class AdminSubmissionList(ListView):
+    model = models.Attempt
+    template_name = "admin_submissions.html"
+    context_object_name = 'attempts'
+    contest = None
+
+    def dispatch(self, *args, **kwargs):
+        self.contest = get_object_or_404(models.Contest, slug=kwargs['contest'])
+        return super().dispatch(*args, **kwargs)
+
+    def get_queryset(self):
+        return super().get_queryset().filter(problem__contest=self.contest)
+    
+    def get_context_data(self, **kwargs):
+        ctxt = super().get_context_data(**kwargs)
+        ctxt['contest'] = self.contest
+        return ctxt
+
+class AdminAttemptDetail(DetailView):
+    model = models.Attempt
+    pk_url_kwarg = 'attempt_pk'
+    template_name = "admin_attempt_detail.html"
+    context_object_name = 'attempt'
+    contest = None
+
+    def dispatch(self, *args, **kwargs):
+        self.contest = get_object_or_404(models.Contest, slug=kwargs['contest'])
+        return super().dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctxt = super().get_context_data(**kwargs)
+        ctxt['contest'] = self.contest
+        ctxt['problem'] = self.object.problem
         return ctxt

@@ -59,3 +59,8 @@
 #timer {
     font-weight: bold;
 }
+
+.table-empty-message {
+    text-align: center;
+    font-weight: bold;
+}

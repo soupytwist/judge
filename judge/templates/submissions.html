@@ -20,6 +20,10 @@
       <td>{{ attempt.score }}</td>
       <td>{{ attempt.get_reason_display }}</td>
     </tr>
+{% empty %}
+    <tr>
+      <td class="table-empty-message" colspan="4">You haven't attempted this problem yet.</td>
+    </tr>
 {% endfor %}
   </tbody>
 </table>
