@@ -19,6 +19,11 @@
     <a class="btn btn-default" href="{{ pdf_url }}">
       {% bootstrap_icon "file" %} PDF
     </a>
+    <a class="btn btn-default" href="{% url "problem_clarifications" contest=problem.contest.slug slug=problem.slug %}">
+        {% with clarct=problem.clarifications.count %}
+        {% bootstrap_icon "question-sign" %} Clarifications{% if clarct > 0 %} <span class="badge">{{ clarct }}</span>{% endif %}
+        {% endwith %}
+    </a>
     <a class="btn btn-default" href="{% url "problem_submissions" contest=problem.contest.slug slug=problem.slug %}">
       {% bootstrap_icon "book" %} My Submissions
     </a>

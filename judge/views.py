@@ -3,8 +3,10 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.views.generic import DetailView, ListView, CreateView, UpdateView
 import django.contrib.messages
+from django.contrib.messages.views import SuccessMessageMixin
 from judge import models
 from judge.util import score
+from judge.forms import ClarificationForm
 
 class ContestView(DetailView):
     model = models.Contest
@@ -14,7 +16,6 @@ class ContestView(DetailView):
 class ProblemView(DetailView):
     model = models.Problem
     template_name = "problem.html"
-    context_object_name = 'problem'
 
 def start_submit(request, **kwargs):
     try:
@@ -74,6 +75,43 @@ class ProblemSubmissions(DetailView):
         myattempts = self.request.user.attempts.filter(problem=self.object).all()
         ctxt['attempts'] = myattempts
         return ctxt
+
+class ProblemClarifications(DetailView):
+    model = models.Problem
+    template_name = "clarifications.html"
+
+    def get_context_data(self, **kwargs):
+        ctxt = super().get_context_data(**kwargs)
+        clarifications = self.object.clarifications.all()
+        ctxt['clarifications'] = clarifications
+        return ctxt
+
+class ProblemAskClarification(SuccessMessageMixin, CreateView):
+    model = models.Clarification
+    template_name = "clarification_ask.html"
+    success_message = "Your question has been submitted. Please check back later for a reply."
+    problem = None
+    asker = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.problem = get_object_or_404(models.Problem, contest__slug=kwargs['contest'], slug=kwargs['slug'])
+        self.asker = request.user
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form(self, form_class):
+        kwargs = super().get_form_kwargs()
+        return ClarificationForm(asker=self.asker, problem=self.problem, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctxt = super().get_context_data(**kwargs)
+        ctxt['problem'] = self.problem
+        return ctxt
+
+    def get_success_url(self):
+        return reverse('problem_home', kwargs={
+            'contest': self.problem.contest.slug,
+            'slug': self.problem.slug,
+        })
 
 class AdminSubmissionList(ListView):
     model = models.Attempt

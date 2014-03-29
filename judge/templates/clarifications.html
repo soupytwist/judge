@@ -1,0 +1,16 @@
+{% extends "problem.html" %}
+{% load bootstrap3 %}
+
+{% block problem_content %}
+<hr>
+<h3>Clarifications <a class="btn btn-default btn-sm" href="{% url "problem_ask_clarification" contest=problem.contest.slug slug=problem.slug %}">Ask a Question</a></h3>
+{% for clarification in clarifications %}
+<hr>
+<strong>{{ clarification.question }}</strong><br>
+<small>{{ clarification.created_at|timesince }} ago</small><br>
+<p>{{ clarification.answer|default:"<em>This question has not yet been answered.</em>" }}</p>
+{% empty %}
+No clarifications have been posted yet.
+{% endfor %}
+
+{% endblock %}

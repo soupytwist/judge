@@ -5,19 +5,6 @@ from functools import partial
 from datetime import datetime
 import os
 
-CHOICES_STATUS = (
-    (1, "Pending"),
-    (2, "Correct"),
-    (3, "Incorrect"),
-)
-
-CHOICES_REASON = (
-    (1, "Accepted"),
-    (2, "Wrong Answer"),
-    (3, "Time Limit Exceeded"),
-    (4, "Bad Submission"),
-)
-
 def get_upload_path(ft, instance, filename):
     if ft == "out":
         ext = ".out"
@@ -81,6 +68,28 @@ class Problem(models.Model):
     #    return self.attempt_set.
 
 class Attempt(models.Model):
+    IN_PROGRESS = 1
+    CORRECT = 2
+    INCORRECT = 3
+    
+    CHOICES_STATUS = (
+        (IN_PROGRESS,   "Pending"),
+        (CORRECT,       "Correct"),
+        (INCORRECT,     "Incorrect"),
+    )
+
+    ACCEPTED = 1
+    WRONG_ANSWER = 2
+    TIMEOUT = 3
+    BAD_SUBMISSION = 4
+
+    CHOICES_REASON = (
+        (ACCEPTED, "Accepted"),
+        (WRONG_ANSWER, "Wrong Answer"),
+        (TIMEOUT, "Time Limit Exceeded"),
+        (BAD_SUBMISSION, "Bad Submission"),
+    )
+
     owner = models.ForeignKey(User, related_name="attempts")
     problem = models.ForeignKey(Problem, related_name="attempts")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -120,4 +129,4 @@ class Clarification(models.Model):
     problem = models.ForeignKey(Problem, related_name="clarifications")
     created_at = models.DateTimeField(auto_now_add=True)
     question = models.CharField(max_length=2048)
-    answer = models.CharField(max_length=2048)
+    answer = models.CharField(max_length=2048, blank=True)

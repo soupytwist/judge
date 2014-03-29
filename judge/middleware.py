@@ -1,11 +1,12 @@
+from judge.models import Attempt
 
 class CheckAttempts:
     def process_request(self, request):
         if request.user.is_authenticated():
-            attempts = request.user.attempts.filter(status=1).all()
+            attempts = Attempt.objects.filter(status=Attempt.IN_PROGRESS).all()
             for attempt in attempts:
                 if attempt.time_passed() >= attempt.problem.time_limit:
-                    attempt.status = 3
-                    attempt.reason = 3
+                    attempt.status = Attempt.INCORRECT
+                    attempt.reason = Attempt.TIMEOUT
                     attempt.save()
         return None
