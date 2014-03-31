@@ -16,7 +16,7 @@ urlpatterns = patterns('',
         url(r'^clarifications/ask/$', views.ProblemAskClarification.as_view(), name='problem_ask_clarification'),
         url(r'^attempt/(?P<attempt_pk>\d+)/$', views.SubmitView.as_view(), name='problem_submit'),
     ))),
-    url(r'^inputs/(?P<attempt_pk>\d+)/$', views.download_inputfile, name='problem_input_file'),
+    url(r'^inputs/(?P<attempt_pk>\d+)/(?P<randomness>.+)/$', views.download_inputfile, name='problem_input_file'),
     url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': "login.html"}, name="login"),
     url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': "/"}, name="logout"),
 

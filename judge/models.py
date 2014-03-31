@@ -4,6 +4,8 @@ from judge import settings
 from functools import partial
 from datetime import datetime
 import os
+import random
+import string
 
 def get_upload_path(ft, instance, filename):
     if ft == "out":
@@ -99,6 +101,7 @@ class Attempt(models.Model):
     testfileid = models.IntegerField()
     outputfile = models.FileField("Ouptut File", upload_to=partial(get_upload_path, 'out'), null=True)
     sourcefile = models.FileField("Source File", upload_to=partial(get_upload_path, 'src'), null=True)
+    randomness = models.CharField(max_length=16, blank=True)
 
     class Meta:
         ordering = ['-testfileid']
@@ -106,6 +109,8 @@ class Attempt(models.Model):
     def save(self):
         if self.testfileid is None:
             self.testfileid = Attempt.objects.filter(problem=self.problem).count()
+        if not self.randomness:
+            self.randomness = "".join(random.choice(string.ascii_letters+string.digits) for i in range(16))
         return super().save()
 
     def time_passed(self):

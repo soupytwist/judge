@@ -1,12 +1,13 @@
 from django.shortcuts import redirect, get_object_or_404
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound
 from django.views.generic import DetailView, ListView, CreateView, UpdateView
 import django.contrib.messages
 from django.contrib.messages.views import SuccessMessageMixin
 from judge import models
 from judge.util import score
 from judge.forms import ClarificationForm
+from sendfile import sendfile
 
 class ContestView(DetailView):
     model = models.Contest
@@ -52,19 +53,14 @@ class SubmitView(UpdateView):
         print("Found the score to be %d" % (self.object.score))
         return response
 
-def download_inputfile(request, **kwargs):
+def download_inputfile(request, randomness=None, **kwargs):
     attempt = models.Attempt.objects.get(pk=kwargs['attempt_pk'])
     path = attempt.get_inputfile_path()
 
-    if not request.user.is_authenticated() or attempt.owner.id != request.user.id:
-        return HttpResponse("You are not authorized to view this.", status=401)
+    if randomness != attempt.randomness:
+        return HttpResponseNotFound("404 Not Found")
 
-    with open(path, "r") as f:
-        content = f.read()
-        resp = HttpResponse(content, content_type="text/plain")
-        resp['Content-Length'] = len(content)
-        resp['Content-Disposition'] = 'attachment; filename="input.txt"'
-        return resp
+    return sendfile(request, path, attachment=True, attachment_filename="input.txt")
 
 class ProblemSubmissions(DetailView):
     model = models.Problem
