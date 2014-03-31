@@ -19,6 +19,19 @@ class IndexView(ListView):
             qs = qs.exclude(id__in=self.request.user.contests.all())
         return qs
 
+def enter_contest(request, **kwargs):
+    try:
+        contest = get_object_or_404(models.Contest, slug=kwargs['slug'])
+        user = request.user
+
+        if not contest.has_contestant(user):
+            contest.contestants.add(user)
+ 
+        return redirect(reverse("contest_home", kwargs={'slug': contest.slug}))
+
+    except models.Contest.DoesNotExist:
+        return redirect(reverse("index", kwargs=kwargs))
+
 class ContestView(DetailView):
     model = models.Contest
     template_name = "contest.html"

@@ -104,8 +104,10 @@ USE_TZ = True
 
 STATIC_URL = '/assets/'
 
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+
 STATICFILES_DIRS = (
-        os.path.join(PROJECT_DIR, "assets"),
+        os.path.join(PROJECT_DIR, 'assets'),
 )
 
 SENDFILE_BACKEND = "sendfile.backends.development"

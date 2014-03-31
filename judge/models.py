@@ -26,7 +26,7 @@ class Contest(models.Model):
     slug = models.SlugField()
     begin_at = models.DateTimeField()
     end_at = models.DateTimeField()
-    contestants = models.ManyToManyField(User, related_name="contests")
+    contestants = models.ManyToManyField(User, related_name="contests", blank=True)
     description = models.TextField()
 
     def get_active(self):

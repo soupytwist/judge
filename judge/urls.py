@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.views.generic import DetailView, TemplateView
 from judge import models, views
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from django.contrib import admin
 admin.autodiscover()
@@ -8,6 +9,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^$', views.IndexView.as_view(), name='index'),
     url(r'^contest/(?P<slug>[-\w]+)/$', views.ContestView.as_view(), name='contest_home'),
+    url(r'^contest/(?P<slug>[-\w]+)/enter/$', views.enter_contest, name='contest_enter'),
     url(r'^contest/(?P<contest>[-\w]+)/(?P<slug>[-\w]+)/', include(patterns('',
         url(r'^$', views.ProblemView.as_view(), name='problem_home'),
         url(r'^attempt/$', views.start_submit, name='problem_start_submit'),
@@ -25,4 +27,4 @@ urlpatterns = patterns('',
         url(r'^attempt/(?P<attempt_pk>\d+)/$', views.AdminAttemptDetail.as_view(), name="attempt_detail"),
     ))),
     url(r'^admin/', include(admin.site.urls)),
-)
+) + staticfiles_urlpatterns()
