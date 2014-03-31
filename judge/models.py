@@ -42,6 +42,19 @@ class Contest(models.Model):
         now = datetime.now(self.begin_at.tzinfo)
         return self.begin_at < now
 
+    def has_ended(self):
+        now = datetime.now(self.begin_at.tzinfo)
+        return self.end_at < now
+    
+    def is_ongoing(self):
+        now = datetime.now(self.begin_at.tzinfo)
+        return self.begin_at < now and self.end_at > now
+
+    def has_contestant(self, user):
+        if not user.is_authenticated():
+            return False
+        return self.contestants.filter(id=user.id).exists()
+
     def __str__(self):
         return "%s (%s)" % (self.name, self.get_active())
 

@@ -4,6 +4,8 @@
 {% load helpers %}
 
 {% block content %}
+{% user_is_contestant problem.contest as competing %}
+
 <h2><a href="{% url "contest_home" slug=problem.contest.slug %}">
     &larr; {{ problem.contest.name }}
 </a></h2>
@@ -24,6 +26,7 @@
         {% bootstrap_icon "question-sign" %} Clarifications{% if clarct > 0 %} <span class="badge">{{ clarct }}</span>{% endif %}
         {% endwith %}
     </a>
+    {% if competing %}
     <a class="btn btn-default" href="{% url "problem_submissions" contest=problem.contest.slug slug=problem.slug %}">
       {% bootstrap_icon "book" %} My Submissions
     </a>
@@ -36,6 +39,7 @@
       {% bootstrap_icon "cloud-upload" %} Solve
     </a>
     {% endif %}
+    {% endif %}
   </div>
   <div class="row">
     <div class="col-md-6">
@@ -43,11 +47,8 @@
     </div>
     <div class="col-md-6" style="text-align: right;">
       <span id="scores">
-          {% if score < 0 %}
-          Not Attempted &middot; Max Score: {{ problem.max_score }}pts
-          {% else %}
-          Your Score: <strong>{{ score }}pts</strong> &middot; Max Score: {{ problem.max_score }}pts
-          {% endif %}
+          {% if score < 0 %} Not Attempted {% else %} Your Score: <strong>{{ score }}pts</strong>
+          {% endif %} &middot; Max Score: {{ problem.max_score }}pts
       </span>
     </div>
   </div>

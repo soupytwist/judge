@@ -9,6 +9,16 @@ from judge.util import score
 from judge.forms import ClarificationForm
 from sendfile import sendfile
 
+class IndexView(ListView):
+    model = models.Contest
+    template_name = "index.html"
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.is_authenticated():
+            qs = qs.exclude(id__in=self.request.user.contests.all())
+        return qs
+
 class ContestView(DetailView):
     model = models.Contest
     template_name = "contest.html"

@@ -6,7 +6,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
+    url(r'^$', views.IndexView.as_view(), name='index'),
     url(r'^contest/(?P<slug>[-\w]+)/$', views.ContestView.as_view(), name='contest_home'),
     url(r'^contest/(?P<contest>[-\w]+)/(?P<slug>[-\w]+)/', include(patterns('',
         url(r'^$', views.ProblemView.as_view(), name='problem_home'),

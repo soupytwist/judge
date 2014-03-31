@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load helpers %}
+{% load bootstrap3 %}
 
 {% block content %}
 
@@ -20,12 +21,15 @@
 <div class="row">
   <div class="col-md-8">
     <h4>Problems</h4>
+    {% user_is_contestant contest as competing %}
+    {% if competing or contest.has_ended %}
     <div class="list-group">
       {% if contest.has_begun %}
         {% for problem in contest.problems.all %}
         <a class="list-group-item" href="{% url 'problem_home' contest=problem.contest.slug slug=problem.slug %}">
             {{ problem }}
             
+            {% if competing %}
             {% problem_score problem as score %}
             <div class="progress problem-score-progress">
                 {% if score < 0 %}
@@ -42,6 +46,7 @@
                 </div>
                 {% endif %}
             </div>
+            {% endif %}
         </a>
         {% endfor %}
       {% else %}
@@ -52,6 +57,19 @@
         </div>
       {% endif %}
     </div>
+    {% else %}
+    <div class="jumbotron">
+        Only registered contestants may view the problems in this contest.<br>
+        <h3>Ready to compete?</h3>
+        <a href="#" class="btn btn-primary">{% bootstrap_icon "star" %} Enter Contest</a><br>
+        <br>
+        {% if contest.is_ongoing %}
+        This contest is in progress!
+        {% else %}
+        The contest begins in <strong>{{ contest.begin_at|timeuntil }}</strong>.
+        {% endif %}
+    </div>
+    {% endif %}
   </div>
   <div class="col-md-4">
     <h4>Rules</h4>

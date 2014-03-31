@@ -11,10 +11,11 @@
 <a href="{% url 'contest_home' slug=contest.slug %}">{{ contest.name }}</a>
 {% endfor %}
 
-{% else %}
-
-You are not logged in.
-
 {% endif %}
+
+<h3>Upcoming Contests</h3>
+{% for contest in object_list %}
+<a href="{% url 'contest_home' slug=contest.slug %}">{{ contest.name }}</a>
+{% endfor %}
 
 {% endblock %}
