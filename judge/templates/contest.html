@@ -60,8 +60,10 @@
     {% else %}
     <div class="jumbotron">
         Only registered contestants may view the problems in this contest.<br>
+        {% if request.user.is_authenticated %}
         <h3>Ready to compete?</h3>
         <a href="{% url "contest_enter" slug=contest.slug %}" class="btn btn-primary">{% bootstrap_icon "star" %} Enter Contest</a><br>
+        {% endif %}
         <br>
         {% if contest.is_ongoing %}
         This contest is in progress!
