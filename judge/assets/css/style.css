@@ -64,3 +64,10 @@
     text-align: center;
     font-weight: bold;
 }
+
+.problem-solved-lbl {
+    display: inline-block;
+    color: #5CB85C;
+    padding-left: 8px;
+    font-weight: bold;
+}

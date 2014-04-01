@@ -22,6 +22,11 @@
       </div>
     </div>
     <div id="page" class="container">
+      <ol class="breadcrumb">
+        {% block breadcrumbs %}
+        <li class="active">Home</li>
+        {% endblock %}
+      </ol>
       {% block content %}{% endblock %}
     </div>
   </body>

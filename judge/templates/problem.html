@@ -3,19 +3,22 @@
 {% load static from staticfiles %}
 {% load helpers %}
 
+{% block breadcrumbs %}
+  <li><a href="{% url "index" %}">Home</a></li>
+  <li><a href="{% url "contest_home" contest=problem.contest.slug %}">{{ problem.contest.name }}</a></li>
+  <li class="active">{{ problem.name }}</li>
+{% endblock %}
+
 {% block content %}
 {% user_is_contestant problem.contest as competing %}
 
-<h2><a href="{% url "contest_home" slug=problem.contest.slug %}">
-    &larr; {{ problem.contest.name }}
-</a></h2>
+<h2>{{ problem.contest.name }}</h2>
 {% static problem.pdf_relative as pdf_url %}
 {% problem_score problem as score %}
 
 <div id="problem-header">
     <h3><a href="{% url "problem_home" contest=problem.contest.slug slug=problem.slug %}">
-      {{ problem }} {% if score == problem.max_score %}
-      <span style="color: green">{% bootstrap_icon "ok" %}</span> {% endif %}
+      {{ problem }}
     </a></h3>
   <div id="problem-actions">
     <a class="btn btn-default" href="{{ pdf_url }}">
@@ -31,13 +34,18 @@
       {% bootstrap_icon "book" %} My Submissions
     </a>
     {% if attempt and attempt.status == 1 %}
-    <a class="btn btn-primary" href="{% url "problem_submit" contest=problem.contest.slug slug=problem.slug attempt_pk=attempt.id %}">
+    <a class="btn btn-primary" href="{% url "problem_submit" contest=problem.contest.slug slug=problem.slug attempt_pk=attempt.id part=attempt.part.name %}">
       {% bootstrap_icon "dashboard" %} Attempt In Progress
     </a>
     {% else %}
-    <a class="btn btn-primary" href="{% url "problem_start_submit" contest=problem.contest.slug slug=problem.slug %}">
-      {% bootstrap_icon "cloud-upload" %} Solve
+    {% problem_next_part problem as nextpart %}
+    {% if nextpart %}
+    <a class="btn btn-primary" href="{% url "problem_start_submit" contest=problem.contest.slug slug=problem.slug part=nextpart.name %}">
+      {% bootstrap_icon "cloud-upload" %} Solve {{ nextpart.name }}
     </a>
+    {% else %}
+    <span class="problem-solved-lbl">Solved {% bootstrap_icon "ok" %}</span>
+    {% endif %}
     {% endif %}
     {% endif %}
   </div>
@@ -48,7 +56,7 @@
     <div class="col-md-6" style="text-align: right;">
       <span id="scores">
           {% if score < 0 %} Not Attempted {% else %} Your Score: <strong>{{ score }}pts</strong>
-          {% endif %} &middot; Max Score: {{ problem.max_score }}pts
+          {% endif %} &middot; Max Score: {{ problem.total_points }}pts &middot; {{ problem.parts.count }} part(s)
       </span>
     </div>
   </div>

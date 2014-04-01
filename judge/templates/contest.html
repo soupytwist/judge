@@ -2,6 +2,11 @@
 {% load helpers %}
 {% load bootstrap3 %}
 
+{% block breadcrumbs %}
+  <li><a href="{% url "index" %}">Home</a></li>
+  <li class="active">{{ contest.name }}</li>
+{% endblock %}
+
 {% block content %}
 
 <div class="row" id="contest-header">
@@ -62,7 +67,7 @@
         Only registered contestants may view the problems in this contest.<br>
         {% if request.user.is_authenticated %}
         <h3>Ready to compete?</h3>
-        <a href="{% url "contest_enter" slug=contest.slug %}" class="btn btn-primary">{% bootstrap_icon "star" %} Enter Contest</a><br>
+        <a href="{% url "contest_enter" contest=contest.slug %}" class="btn btn-primary">{% bootstrap_icon "star" %} Enter Contest</a><br>
         {% endif %}
         <br>
         {% if contest.is_ongoing %}

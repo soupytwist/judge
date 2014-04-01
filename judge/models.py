@@ -65,7 +65,6 @@ class Problem(models.Model):
     time_limit = models.IntegerField()
     slug = models.SlugField()
     pdf = models.FilePathField(path=settings.PROBLEM_DIR)
-    max_score = models.IntegerField(default=100)
 
     class Meta:
         ordering = ['order']
@@ -77,10 +76,34 @@ class Problem(models.Model):
         return "%s. %s" % (self.order, self.name)
 
     def pdf_relative(self):
+        # TODO Integrate with sendfile
         return self.pdf[self.pdf.find("/problems/") + 1:]
 
-    #def percent_correct(self):
-    #    return self.attempt_set.
+    def total_points(self):
+        return self.parts.aggregate(total=models.Sum("points"))['total']
+
+    def get_score(self, user):
+        return sum([part.get_score(user) for part in self.parts], [])
+
+    def get_next_part(self, user):
+        for part in self.parts.all():
+            if part.get_score(user) != part.points:
+                return part
+        return None
+
+class ProblemPart(models.Model):
+    problem = models.ForeignKey(Problem, related_name="parts")
+    name = models.CharField(max_length=64)
+    points = models.IntegerField()
+    order = models.IntegerField()
+
+    class Meta:
+        ordering = ['order']
+
+    def get_score(self, user):
+        if self.attempts.filter(owner=user).count() == 0:
+            return 0
+        return self.attempts.filter(owner=user).aggregate(maxscore=models.Max("score"))['maxscore']
 
 class Attempt(models.Model):
     IN_PROGRESS = 1
@@ -106,10 +129,10 @@ class Attempt(models.Model):
     )
 
     owner = models.ForeignKey(User, related_name="attempts")
-    problem = models.ForeignKey(Problem, related_name="attempts")
+    part = models.ForeignKey(ProblemPart, related_name="attempts")
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(choices=CHOICES_STATUS, default=1)
-    score = models.IntegerField()
+    score = models.IntegerField(default=0)
     reason = models.IntegerField(choices=CHOICES_REASON, null=True)
     testfileid = models.IntegerField()
     outputfile = models.FileField("Ouptut File", upload_to=partial(get_upload_path, 'out'), null=True)
@@ -121,17 +144,17 @@ class Attempt(models.Model):
 
     def save(self):
         if self.testfileid is None:
-            self.testfileid = Attempt.objects.filter(problem=self.problem).count()
+            self.testfileid = Attempt.objects.filter(part=self.part).count()
         if not self.randomness:
             self.randomness = "".join(random.choice(string.ascii_letters+string.digits) for i in range(16))
         return super().save()
 
     def time_passed(self):
-        return min(int((datetime.now(self.created_at.tzinfo) - self.created_at).total_seconds()), self.problem.time_limit)
+        return min(int((datetime.now(self.created_at.tzinfo) - self.created_at).total_seconds()), self.part.problem.time_limit)
 
     def get_inputfile_path(self):
         return os.path.join(settings.PROJECT_DIR, "secret", "inputs",
-                self.problem.slug, str(self.testfileid) + ".in")
+                self.part.problem.slug, "%s-%d.in" % (self.part.name, self.testfileid))
 
     def is_in_progress(self):
         return self.status == 1

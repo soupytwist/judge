@@ -2,12 +2,25 @@ from django.shortcuts import redirect, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseNotFound
 from django.views.generic import DetailView, ListView, CreateView, UpdateView
+from django.views.generic.base import ContextMixin
 import django.contrib.messages
 from django.contrib.messages.views import SuccessMessageMixin
 from judge import models
 from judge.util import score
 from judge.forms import ClarificationForm
 from sendfile import sendfile
+
+class ContestMixin():
+    def dipatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated():
+            return redirect(reverse('index'))
+
+        if 'contest' in kwargs:
+            contest = get_object_or_404(models.Contest, slug=kwargs['contest'])
+            if not contest.has_contestant(request.user):
+                return redirect(reverse('index'))
+
+        return super().dispatch(request, *args, **kwargs)
 
 class IndexView(ListView):
     model = models.Contest
@@ -21,13 +34,13 @@ class IndexView(ListView):
 
 def enter_contest(request, **kwargs):
     try:
-        contest = get_object_or_404(models.Contest, slug=kwargs['slug'])
+        contest = get_object_or_404(models.Contest, slug=kwargs['contest'])
         user = request.user
 
         if not contest.has_contestant(user):
             contest.contestants.add(user)
  
-        return redirect(reverse("contest_home", kwargs={'slug': contest.slug}))
+        return redirect(reverse("contest_home", kwargs={'contest': contest.slug}))
 
     except models.Contest.DoesNotExist:
         return redirect(reverse("index", kwargs=kwargs))
@@ -36,6 +49,7 @@ class ContestView(DetailView):
     model = models.Contest
     template_name = "contest.html"
     context_object_name = 'contest'
+    slug_url_kwarg = 'contest'
 
 class ProblemView(DetailView):
     model = models.Problem
@@ -43,18 +57,22 @@ class ProblemView(DetailView):
 
 def start_submit(request, **kwargs):
     try:
-        problem = models.Problem.objects.filter(slug=kwargs['slug'], contest__slug=kwargs['contest']).get()
+        part = models.ProblemPart.objects.filter(\
+                problem__slug=kwargs['slug'], \
+                problem__contest__slug=kwargs['contest'],
+                name=kwargs['part']).get()
         user = request.user
 
-        att = user.attempts.filter(problem=problem, status=1).first()
+        att = user.attempts.filter(part=part, status=models.Attempt.IN_PROGRESS).first()
         if att is None:
-            att = models.Attempt(problem=problem, owner=user, status=1, score=0)
+            att = models.Attempt(part=part, owner=user)
             att.save()
         
         kwargs['attempt_pk'] = att.id
         return redirect(reverse("problem_submit", kwargs=kwargs))
 
-    except models.Problem.DoesNotExist:
+    except models.ProblemPart.DoesNotExist:
+        del kwargs['part']
         return redirect(reverse("problem_home", kwargs=kwargs))
 
 class SubmitView(UpdateView):
@@ -67,7 +85,8 @@ class SubmitView(UpdateView):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['problem'] = self.object.problem
+        data['problem'] = self.object.part.problem
+        data['part'] = self.object.part
         return data
 
     def form_valid(self, form):
@@ -91,7 +110,7 @@ class ProblemSubmissions(DetailView):
 
     def get_context_data(self, **kwargs):
         ctxt = super().get_context_data(**kwargs)
-        myattempts = self.request.user.attempts.filter(problem=self.object).all()
+        myattempts = self.request.user.attempts.filter(part__problem=self.object).all()
         ctxt['attempts'] = myattempts
         return ctxt
 

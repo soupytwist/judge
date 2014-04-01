@@ -9,4 +9,5 @@ class ProblemAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Contest, ContestAdmin)
 admin.site.register(models.Problem, ProblemAdmin)
+admin.site.register(models.ProblemPart)
 admin.site.register(models.Clarification)
