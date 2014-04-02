@@ -16,6 +16,7 @@ import judge as project_module
 PROJECT_DIR = os.path.dirname(os.path.realpath(project_module.__file__))
 
 PROBLEM_DIR = os.path.join(PROJECT_DIR, "assets", "problems")
+SECRET_DIR = os.path.join(PROJECT_DIR, "secret")
 SUBMISSION_DIR = os.path.join(PROJECT_DIR, "submissions")
 
 # Quick-start development settings - unsuitable for production

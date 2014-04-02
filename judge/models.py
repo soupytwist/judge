@@ -153,7 +153,7 @@ class Attempt(models.Model):
         return min(int((datetime.now(self.created_at.tzinfo) - self.created_at).total_seconds()), self.part.problem.time_limit)
 
     def get_inputfile_path(self):
-        return os.path.join(settings.PROJECT_DIR, "secret", "inputs",
+        return os.path.join(settings.SECRET_DIR, "inputs",
                 self.part.problem.slug, "%s-%d.in" % (self.part.name, self.testfileid))
 
     def is_in_progress(self):
