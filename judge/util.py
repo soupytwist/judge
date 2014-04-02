@@ -1,3 +1,4 @@
+from judge.models import Attempt
 
 def score_line(mine, theirs):
     return theirs.split() == mine.split()
