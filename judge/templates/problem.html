@@ -13,7 +13,6 @@
 {% user_is_contestant problem.contest as competing %}
 
 <h2>{{ problem.contest.name }}</h2>
-{% static problem.pdf_relative as pdf_url %}
 {% problem_score problem as score %}
 
 <div id="problem-header">
@@ -21,7 +20,7 @@
       {{ problem }}
     </a></h3>
   <div id="problem-actions">
-    <a class="btn btn-default" href="{{ pdf_url }}">
+    <a class="btn btn-default" href="{% url "problem_pdf_file" contest=problem.contest.slug slug=problem.slug %}">
       {% bootstrap_icon "file" %} PDF
     </a>
     <a class="btn btn-default" href="{% url "problem_clarifications" contest=problem.contest.slug slug=problem.slug %}">
@@ -63,7 +62,7 @@
 </div>
 
 {% block problem_content %}
-<iframe id="problem-view" src="{{ pdf_url }}"></iframe>
+<iframe id="problem-view" src="{% url "problem_pdf_file_frame" contest=problem.contest.slug slug=problem.slug %}"></iframe>
 {% endblock %}
 
 {% endblock %}

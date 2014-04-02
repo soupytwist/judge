@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from judge import settings
 from functools import partial
 from datetime import datetime
@@ -22,6 +23,11 @@ def get_upload_path(ft, instance, filename):
     return os.path.join(settings.SUBMISSION_DIR,
             "%d-%s" % (contest.id, contest.slug), instance.owner.username,
             "%s_%d%s" % (problem.slug, instance.testfileid, ext))
+
+def get_problem_directory(instance, filename):
+    contest = instance.contest
+    return os.path.join(settings.SUBMISSION_DIR,
+            "%d-%s" % (contest.id, contest.slug), instance.slug, filename)
 
 class Contest(models.Model):
     name = models.CharField(max_length=256)
@@ -66,7 +72,7 @@ class Problem(models.Model):
     order = models.CharField(max_length=2)
     time_limit = models.IntegerField()
     slug = models.SlugField()
-    pdf = models.FilePathField(path=settings.PROBLEM_DIR)
+    pdf = models.FileField(upload_to=get_problem_directory)
 
     class Meta:
         ordering = ['order']
@@ -78,8 +84,10 @@ class Problem(models.Model):
         return "%s. %s" % (self.order, self.name)
 
     def pdf_relative(self):
-        # TODO Integrate with sendfile
-        return self.pdf[self.pdf.find("/problems/") + 1:]
+        return reverse('problem_pdf', kwargs={
+                'contest': self.contest.slug,
+                'slug': self.slug
+            })
 
     def total_points(self):
         return self.parts.aggregate(total=models.Sum("points"))['total']

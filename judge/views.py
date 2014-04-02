@@ -81,7 +81,6 @@ class SubmitView(UpdateView):
     fields = ['outputfile', 'sourcefile']
     pk_url_kwarg = "attempt_pk"
     context_object_name = "attempt"
-    success_url = "/"
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -92,8 +91,14 @@ class SubmitView(UpdateView):
     def form_valid(self, form):
         response = super().form_valid(form)
         score(self.object)
-        print("Found the score to be %d" % (self.object.score))
         return response
+
+    def get_success_url(self):
+        problem = self.object.part.problem
+        return reverse('problem_submissions', kwargs={
+                'contest': problem.contest.slug,
+                'slug': problem.slug
+            })
 
 def download_inputfile(request, randomness=None, **kwargs):
     attempt = models.Attempt.objects.get(pk=kwargs['attempt_pk'])
@@ -103,6 +108,14 @@ def download_inputfile(request, randomness=None, **kwargs):
         return HttpResponseNotFound("404 Not Found")
 
     return sendfile(request, path, attachment=True, attachment_filename="input.txt")
+
+def download_pdf(request, contest=None, slug=None, attach=True, **kwargs):
+    problem = get_object_or_404(models.Problem, contest__slug=contest, slug=slug)
+
+    if problem.contest.has_ended() or request.user.is_authenticated() and problem.contest.has_contestant(request.user):
+        return sendfile(request, problem.pdf.path, attachment=attach, attachment_filename=slug+".pdf")
+
+    return HttpResponseNotFound("404 Not Found")
 
 class ProblemSubmissions(DetailView):
     model = models.Problem
