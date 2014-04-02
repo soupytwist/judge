@@ -10,7 +10,7 @@
         <h3>Step 1: Grab your input file</h3>
       </div>
       <div class="panel-body" id="input-panel">
-          <a class="btn btn-lg btn-primary" href="{% url "problem_input_file" attempt_pk=attempt.id randomness=attempt.randomness slug=problem.slug %}">
+          <a class="btn btn-lg btn-primary" href="{% url "problem_input_file" contest=attempt.part.problem.contest.slug attempt_pk=attempt.id randomness=attempt.randomness slug=problem.slug %}">
             DOLWNLOAD INPUT
           </a>
       </div>
