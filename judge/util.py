@@ -8,7 +8,7 @@ def filter_lines(lines):
 
 def score(attempt):
     with open(attempt.outputfile.path, "r") as answer:
-        with open(attempt.get_inputfile_path(), "r") as oracle:
+        with open(attempt.get_outputfile_path(), "r") as oracle:
             answerlines = filter_lines(answer.readlines())
             oraclelines = filter_lines(oracle.readlines())
             

@@ -158,6 +158,10 @@ class Attempt(models.Model):
         return os.path.join(settings.SECRET_DIR, "inputs",
                 self.part.problem.slug, "%s-%d.in" % (self.part.name, self.testfileid))
 
+    def get_outputfile_path(self):
+        return os.path.join(settings.SECRET_DIR, "outputs",
+                self.part.problem.slug, "%s-%d.out" % (self.part.name, self.testfileid))
+
     def is_in_progress(self):
         return self.status == 1
 
