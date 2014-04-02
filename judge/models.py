@@ -16,10 +16,12 @@ def get_upload_path(ft, instance, filename):
         except ValueError:
             ext = ".src"
 
+    problem = instance.part.problem
+    contest = problem.contest
+
     return os.path.join(settings.SUBMISSION_DIR,
-            "%d-%s" % (instance.problem.contest.id, instance.problem.contest.slug),
-            instance.owner.username,
-            "%s_%d%s" % (instance.problem.slug, instance.testfileid, ext))
+            "%d-%s" % (contest.id, contest.slug), instance.owner.username,
+            "%s_%d%s" % (problem.slug, instance.testfileid, ext))
 
 class Contest(models.Model):
     name = models.CharField(max_length=256)
