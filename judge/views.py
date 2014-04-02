@@ -10,7 +10,7 @@ from judge.util import score
 from judge.forms import ClarificationForm
 from sendfile import sendfile
 
-class ContestMixin():
+class ContestantMixin():
     def dipatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated():
             return redirect(reverse('index'))
@@ -51,7 +51,7 @@ class ContestView(DetailView):
     context_object_name = 'contest'
     slug_url_kwarg = 'contest'
 
-class ProblemView(DetailView):
+class ProblemView(ContestantMixin, DetailView):
     model = models.Problem
     template_name = "problem.html"
 
@@ -74,12 +74,16 @@ class ProblemInputOutputView(DetailView):
         return ctxt
 
 def start_submit(request, **kwargs):
+    user = request.user
+    contest = get_object_or_404(models.Contest, slug=kwargs['contest'])
+    if not contest.has_contestant(user):
+        return reverse("index")
+
     try:
         part = models.ProblemPart.objects.filter(\
                 problem__slug=kwargs['slug'], \
                 problem__contest__slug=kwargs['contest'],
                 name=kwargs['part']).get()
-        user = request.user
 
         att = user.attempts.filter(part=part, status=models.Attempt.IN_PROGRESS).first()
         if att is None:
@@ -93,7 +97,7 @@ def start_submit(request, **kwargs):
         del kwargs['part']
         return redirect(reverse("problem_home", kwargs=kwargs))
 
-class SubmitView(UpdateView):
+class SubmitView(ContestantMixin, UpdateView):
     model = models.Attempt
     template_name = "submit.html"
     fields = ['outputfile', 'sourcefile']
@@ -140,7 +144,7 @@ def download_pdf(request, contest=None, slug=None, attach=True, **kwargs):
 
     return HttpResponseNotFound("404 Not Found")
 
-class ProblemSubmissions(DetailView):
+class ProblemSubmissions(ContestantMixin, DetailView):
     model = models.Problem
     template_name = "submissions.html"
 
@@ -160,7 +164,7 @@ class ProblemClarifications(DetailView):
         ctxt['clarifications'] = clarifications
         return ctxt
 
-class ProblemAskClarification(SuccessMessageMixin, CreateView):
+class ProblemAskClarification(ContestantMixin, SuccessMessageMixin, CreateView):
     model = models.Clarification
     template_name = "clarification_ask.html"
     success_message = "Your question has been submitted. Please check back later for a reply."
@@ -192,13 +196,14 @@ class AdminSubmissionList(ListView):
     template_name = "admin_submissions.html"
     context_object_name = 'attempts'
     contest = None
+    paginate_by = 20
 
     def dispatch(self, *args, **kwargs):
         self.contest = get_object_or_404(models.Contest, slug=kwargs['contest'])
         return super().dispatch(*args, **kwargs)
 
     def get_queryset(self):
-        return super().get_queryset().filter(problem__contest=self.contest)
+        return super().get_queryset().filter(part__problem__contest=self.contest)
     
     def get_context_data(self, **kwargs):
         ctxt = super().get_context_data(**kwargs)
@@ -219,5 +224,5 @@ class AdminAttemptDetail(DetailView):
     def get_context_data(self, **kwargs):
         ctxt = super().get_context_data(**kwargs)
         ctxt['contest'] = self.contest
-        ctxt['problem'] = self.object.problem
+        ctxt['part'] = self.object.part
         return ctxt
