@@ -73,12 +73,17 @@ class Problem(models.Model):
     time_limit = models.IntegerField()
     slug = models.SlugField()
     pdf = models.FileField(upload_to=get_problem_directory)
+    sampleinput = models.FileField(upload_to=get_problem_directory)
+    sampleoutput = models.FileField(upload_to=get_problem_directory)
 
     class Meta:
         ordering = ['order']
 
     def attempt_count(self):
         return self.attempts.count()
+
+    def clarification_count(self):
+        return self.clarifications.exclude(answer="").count()
 
     def __str__(self):
         return "%s. %s" % (self.order, self.name)
@@ -90,7 +95,7 @@ class Problem(models.Model):
             })
 
     def total_points(self):
-        return self.parts.aggregate(total=models.Sum("points"))['total']
+        return self.parts.aggregate(total=models.Sum("points"))['total'] or 0
 
     def get_score(self, user):
         return sum([part.get_score(user) for part in self.parts], [])

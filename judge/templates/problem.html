@@ -23,8 +23,11 @@
     <a class="btn btn-default" href="{% url "problem_pdf_file" contest=problem.contest.slug slug=problem.slug %}">
       {% bootstrap_icon "file" %} PDF
     </a>
+    <a class="btn btn-default" href="{% url "problem_sample_io" contest=problem.contest.slug slug=problem.slug %}">
+      {% bootstrap_icon "list-alt" %} Sample Data
+    </a>
     <a class="btn btn-default" href="{% url "problem_clarifications" contest=problem.contest.slug slug=problem.slug %}">
-        {% with clarct=problem.clarifications.count %}
+        {% with clarct=problem.clarification_count %}
         {% bootstrap_icon "question-sign" %} Clarifications{% if clarct > 0 %} <span class="badge">{{ clarct }}</span>{% endif %}
         {% endwith %}
     </a>

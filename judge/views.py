@@ -55,6 +55,24 @@ class ProblemView(DetailView):
     model = models.Problem
     template_name = "problem.html"
 
+class ProblemInputOutputView(DetailView):
+    model = models.Problem
+    template_name = "sample_io.html"
+
+    def get_context_data(self, object=None, **kwargs):
+        sampleinput = []
+        sampleoutput = []
+        with open(object.sampleinput.url, 'r') as infile:
+            sampleinput += infile.readlines()
+        with open(object.sampleoutput.url, 'r') as outfile:
+            sampleoutput += outfile.readlines()
+
+        ctxt = super().get_context_data(object=object, **kwargs)
+        ctxt['sampleinput'] = "".join(sampleinput)
+        ctxt['sampleoutput'] = "".join(sampleoutput)
+
+        return ctxt
+
 def start_submit(request, **kwargs):
     try:
         part = models.ProblemPart.objects.filter(\
@@ -99,6 +117,11 @@ class SubmitView(UpdateView):
                 'contest': problem.contest.slug,
                 'slug': problem.slug
             })
+
+def download_sample(request, contest=None, slug=None, file='input', **kwargs):
+    problem = get_object_or_404(models.Problem, contest__slug=contest, slug=slug)
+    samplefile = problem.sampleinput if file == 'input' else problem.sampleoutput
+    return sendfile(request, samplefile.path, attachment=True, attachment_filename=file+".txt")
 
 def download_inputfile(request, randomness=None, **kwargs):
     attempt = models.Attempt.objects.get(pk=kwargs['attempt_pk'])

@@ -1,5 +1,6 @@
 {% extends "problem.html" %}
 {% load bootstrap3 %}
+{% load humanize %}
 
 {% block problem_content %}
 <hr>
@@ -17,7 +18,7 @@
   <tbodY>
 {% for attempt in attempts %}
     <tr>
-      <td>{{ attempt.created_at|timesince }} ago</td>
+      <td>{{ attempt.created_at|naturaltime }} ago</td>
       <td>{{ attempt.part.name }}</td>
       <td>{{ attempt.get_status_display }}</td>
       <td>{{ attempt.score }}</td>

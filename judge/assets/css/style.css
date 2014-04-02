@@ -71,3 +71,8 @@
     padding-left: 8px;
     font-weight: bold;
 }
+
+textarea.sample {
+    width: 100%;
+    height: 400px;
+}
