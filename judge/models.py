@@ -135,8 +135,8 @@ class Attempt(models.Model):
     score = models.IntegerField(default=0)
     reason = models.IntegerField(choices=CHOICES_REASON, null=True)
     testfileid = models.IntegerField()
-    outputfile = models.FileField("Ouptut File", upload_to=partial(get_upload_path, 'out'), null=True)
-    sourcefile = models.FileField("Source File", upload_to=partial(get_upload_path, 'src'), null=True)
+    outputfile = models.FileField("Ouptut File", upload_to=partial(get_upload_path, 'out'), null=True, blank=True)
+    sourcefile = models.FileField("Source File", upload_to=partial(get_upload_path, 'src'), null=True, blank=True)
     randomness = models.CharField(max_length=16, blank=True)
 
     class Meta:

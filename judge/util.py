@@ -1,28 +1,32 @@
 
-def score(attempt):
-    correct = 0
-    missed = 0
+def score_line(mine, theirs):
+    return theirs.split() == mine.split()
 
+def filter_lines(lines):
+    return [line for line in lines if line]
+
+def score(attempt):
     with open(attempt.outputfile.path, "r") as answer:
         with open(attempt.get_inputfile_path(), "r") as oracle:
-            answerlines = answer.readlines()
-            oraclelines = oracle.readlines()
-            ct = len(oraclelines)
-
-            if len(answerlines) != ct:
-                attempt.status = 3
-                attempt.reason = 4
+            answerlines = filter_lines(answer.readlines())
+            oraclelines = filter_lines(oracle.readlines())
+            
+            if len(answerlines) != len(oraclelines):
                 attempt.score = 0
+                attempt.status = Attempt.INCORRECT
+                attempt.reason = Attempt.BAD_SUBMISSION
                 attempt.save()
                 return
             
-            for theirs, mine in zip(answerlines, oraclelines):
-                if theirs.split() == mine.split():
-                    correct += 1
-                else:
-                    missed += 1
+            if all(score_line(mine, theirs) for mine, theirs in zip(oraclelines, answerlines)):
+                attempt.score = attempt.part.points
+                attempt.status = Attempt.CORRECT
+                attempt.reason = Attempt.ACCEPTED
+                attempt.save()
+                return
 
-            attempt.score = int((float(correct)/ct) * attempt.problem.max_score)
-            attempt.status = 2 if missed == 0 else 3
-            attempt.reason = 1 if missed == 0 else 2
-            attempt.save()
+    attempt.score = 0
+    attempt.status = Attempt.INCORRECT
+    attempt.reason = Attempt.WRONG_ANSWER
+    attempt.save()
+    return
