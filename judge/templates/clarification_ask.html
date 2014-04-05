@@ -5,11 +5,10 @@
 <hr>
 <h3>Clarifications</h3>
 <form action="" method="POST">
-<div class="row">
 {% bootstrap_form form %}
 {% csrf_token %}
+<a class="btn btn-default" href="{% url "problem_clarifications" contest=problem.contest.slug slug=problem.slug %}"> Cancel</a>
 <button type="submit" class="btn btn-primary">{% bootstrap_icon "comment" %} Submit Question </button>
-</div>
 </form>
 
 {% endblock %}

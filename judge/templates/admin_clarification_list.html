@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block breadcrumbs %}
+<li><a href="{% url "index" %}">Home</a></li>
+<li class="active">Clarifications</li>
+{% endblock %}
+
+{% block content %}
+<h2>{{ contest.name }}</h2>
+<hr>
+<h3>All Clarifications</h3>
+{% for clarification in clarifications %}
+<div class="well">
+  <small>{{ clarification.created_at|timesince }} ago</small><br>
+  <strong>{{ clarification.problem }}</strong> &middot; 
+  <strong>{{ clarification.question }}</strong><br>
+  <p>{{ clarification.answer|default:"<em>This question has not yet been answered.</em>" }}</p>
+  <a class="btn btn-primary" href="{% url "clarification_respond" contest=contest.slug pk=clarification.id %}">{% bootstrap_icon "comment" %} Respond</a>
+</div>
+{% empty %}
+No clarifications have been posted yet.
+{% endfor %}
+
+{% bootstrap_pagination page_obj %}
+
+{% endblock %}

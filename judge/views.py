@@ -226,3 +226,44 @@ class AdminAttemptDetail(DetailView):
         ctxt['contest'] = self.contest
         ctxt['part'] = self.object.part
         return ctxt
+
+class AdminClarificationList(ListView):
+    model = models.Clarification
+    template_name = "admin_clarification_list.html"
+    context_object_name = 'clarifications'
+    contest = None
+    paginate_by = 4
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or not request.user.is_staff:
+            return redirect("/admin/")
+
+        self.contest = get_object_or_404(models.Contest, slug=kwargs['contest'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctxt = super().get_context_data(**kwargs)
+        ctxt['contest'] = self.contest
+        return ctxt
+
+class AdminClarificationRespond(UpdateView):
+    model = models.Clarification
+    template_name = "admin_clarification_respond.html"
+    fields = ['answer']
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or not request.user.is_staff:
+            return redirect("/admin/")
+
+        self.contest = get_object_or_404(models.Contest, slug=kwargs['contest'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctxt = super().get_context_data(**kwargs)
+        ctxt['contest'] = self.contest
+        return ctxt
+
+    def get_success_url(self):
+        return reverse("clarification_list", kwargs={
+            'contest': self.contest.slug,
+        })
