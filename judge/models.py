@@ -73,8 +73,8 @@ class Problem(models.Model):
     time_limit = models.IntegerField()
     slug = models.SlugField()
     pdf = models.FileField(upload_to=get_problem_directory)
-    sampleinput = models.FileField(upload_to=get_problem_directory)
-    sampleoutput = models.FileField(upload_to=get_problem_directory)
+    sampleinput = models.FileField("Sample Input", upload_to=get_problem_directory)
+    sampleoutput = models.FileField("Sample Output", upload_to=get_problem_directory)
 
     class Meta:
         ordering = ['order']
