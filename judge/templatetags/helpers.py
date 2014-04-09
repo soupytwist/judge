@@ -8,8 +8,7 @@ def problem_score(context, problem):
     request = context['request']
     if not problem.contest.has_contestant(request.user):
         return -1
-    att = request.user.attempts.filter(part__problem=problem).order_by("-score").first()
-    return att.score if att is not None else -1
+    return problem.get_score(request.user)
 
 @register.assignment_tag(takes_context=True)
 def contest_score(context, contest):
