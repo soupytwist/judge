@@ -63,6 +63,9 @@ class Contest(models.Model):
             return False
         return self.contestants.filter(id=user.id).exists()
 
+    def get_score(self, user):
+        return sum([problem.get_score(user) for problem in self.problems.all()], 0)
+
     def __str__(self):
         return "%s (%s)" % (self.name, self.get_active())
 
@@ -98,7 +101,7 @@ class Problem(models.Model):
         return self.parts.aggregate(total=models.Sum("points"))['total'] or 0
 
     def get_score(self, user):
-        return sum([part.get_score(user) for part in self.parts], [])
+        return sum([part.get_score(user) for part in self.parts.all()], 0)
 
     def get_next_part(self, user):
         for part in self.parts.all():

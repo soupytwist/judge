@@ -12,8 +12,16 @@ def problem_score(context, problem):
     return att.score if att is not None else -1
 
 @register.assignment_tag(takes_context=True)
+def contest_score(context, contest):
+    request = context['request']
+    if not contest.has_contestant(request.user):
+        return 0
+    return contest.get_score(request.user)
+
+@register.assignment_tag(takes_context=True)
 def user_is_contestant(context, contest):
     request = context['request']
+    print(contest)
     return contest.has_contestant(request.user)
 
 @register.assignment_tag(takes_context=True)

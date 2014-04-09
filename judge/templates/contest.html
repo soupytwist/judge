@@ -11,7 +11,7 @@
 
 <div class="row" id="contest-header">
   <div class="col-md-8">
-    <h2>{{ contest.name }}</h2>
+  <h2>{{ contest.name }}</h2>
   </div>
   <div class="col-md-4">
     <dl id="contest-times" class="dl-horizontal">
@@ -61,7 +61,7 @@
             The contest begins in <strong>{{ contest.begin_at|timeuntil }}</strong>.
         </div>
       {% endif %}
-    </div>
+      </div>
     {% else %}
     <div class="jumbotron">
         Only registered contestants may view the problems in this contest.<br>

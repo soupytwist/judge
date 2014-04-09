@@ -1,6 +1,7 @@
 <!doctype html>
 {% load static from staticfiles %}
 {% load bootstrap3 %}
+{% load helpers %}
 <html>
   <head>
   <title>The Judge</title>
@@ -14,6 +15,11 @@
         <h1>Judge</h1>
         <div id="auth-area">
           {% if request.user.is_authenticated %}
+          {% if contest %}
+          {% contest_score contest as cscore %}<strong>{{ cscore }}</strong> points &middot;
+          {% elif problem %}
+          {% contest_score problem.contest as cscore %}<strong>{{ cscore }}</strong> points &middot;
+          {% endif %}
           {{ request.user.username }} &middot; <a href="{% url 'logout' %}">Logout</a>
           {% else %}
           <a href="{% url 'login' %}">Login</a>
