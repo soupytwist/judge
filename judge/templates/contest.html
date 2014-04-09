@@ -44,9 +44,7 @@
                 </div>
                 {% else %}
                 <div class="progress-bar" role="progressbar"
-                    aria-valuenow="{{ score }}"
-                    aria-valuemin="0" aria-valuemax="100"
-                    style="width: {{ score|as_pct:100 }}%;">
+                    style="width: {{ score|as_pct:problem.total_points }}%;">
                   {{ score }} points
                 </div>
                 {% endif %}
