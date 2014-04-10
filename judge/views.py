@@ -9,6 +9,7 @@ from judge import models
 from judge.util import score
 from judge.forms import ClarificationForm
 from sendfile import sendfile
+from difflib import HtmlDiff
 
 class ContestantMixin():
     def dipatch(self, request, *args, **kwargs):
@@ -226,6 +227,26 @@ class AdminAttemptDetail(DetailView):
         ctxt['contest'] = self.contest
         ctxt['part'] = self.object.part
         return ctxt
+
+def admin_attempt_diff(request, contest=None, attempt_pk=None):
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return redirect("/admin/")
+
+    attempt = get_object_or_404(models.Attempt, pk=attempt_pk)
+    their_lines = []
+    my_lines = []
+
+    if attempt.outputfile:
+        with open(attempt.outputfile.path) as theirs:
+            their_lines = theirs.readlines()
+
+    with open(attempt.get_outputfile_path()) as mine:
+        my_lines = mine.readlines()
+
+    differ = HtmlDiff()
+    html = differ.make_file(their_lines, my_lines, fromdesc="User's output", todesc="Judge's output")
+
+    return HttpResponse(html, content_type="text/html")
 
 class AdminClarificationList(ListView):
     model = models.Clarification

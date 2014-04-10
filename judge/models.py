@@ -158,7 +158,7 @@ class Attempt(models.Model):
     randomness = models.CharField(max_length=16, blank=True)
 
     class Meta:
-        ordering = ['-testfileid']
+        ordering = ['-created_at']
 
     def save(self):
         if self.testfileid is None:
