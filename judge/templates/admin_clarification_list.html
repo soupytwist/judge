@@ -3,6 +3,7 @@
 
 {% block breadcrumbs %}
 <li><a href="{% url "index" %}">Home</a></li>
+<li><a href="{% url "contest_home" contest=contest.slug %}">{{ contest.name }}</a></li>
 <li class="active">Clarifications</li>
 {% endblock %}
 
@@ -16,7 +17,9 @@
   <strong>{{ clarification.problem }}</strong> &middot; 
   <strong>{{ clarification.question }}</strong><br>
   <p>{{ clarification.answer|default:"<em>This question has not yet been answered.</em>" }}</p>
-  <a class="btn btn-primary" href="{% url "clarification_respond" contest=contest.slug pk=clarification.id %}">{% bootstrap_icon "comment" %} Respond</a>
+  <a class="btn btn-{{ clarification.answer|yesno:"default,primary" }}" href="{% url "clarification_respond" contest=contest.slug pk=clarification.id %}">{% bootstrap_icon "comment" %}
+      {{ clarification.answer|yesno:"Edit Response,Respond" }}
+  </a>
 </div>
 {% empty %}
 No clarifications have been posted yet.

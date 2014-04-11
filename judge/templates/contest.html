@@ -81,6 +81,12 @@
     <p>
     {{ contest.description }}
     </p>
+    {% if request.user.is_staff %}
+    <hr>
+    <h4>Admin</h4>
+    <a href="{% url "submission_list" contest=contest.slug %}">All Submissions</a><br>
+    <a href="{% url "clarification_list" contest=contest.slug %}">Clarifications</a><br>
+    {% endif %}
   </div>
 </div>
 

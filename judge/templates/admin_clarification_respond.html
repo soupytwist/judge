@@ -3,13 +3,17 @@
 
 {% block breadcrumbs %}
 <li><a href="{% url "index" %}">Home</a></li>
-<li class="active">Clarifications</li>
+<li><a href="{% url "contest_home" contest=contest.slug %}">{{ contest.name }}</a></li>
+<li><a href="{% url "clarification_list" contest=contest.slug %}">Clarifications</a></li>
+<li class="active">{{ clarification.question|truncatechars:20 }}</li>
 {% endblock %}
 
 {% block content %}
 <h2>{{ contest.name }}</h2>
 <hr>
-<h3>{{ clarification.problem }} &middot; {{ clarification.question }}</h3>
+<h3>{{ clarification.problem }} &middot; asked by {{ object.owner }}</h3>
+<strong>Question:</strong>
+<p>{{ clarification.question }}</p>
 <form action="" method="POST">
     {% csrf_token %}
     {% bootstrap_form form %}

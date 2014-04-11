@@ -20,3 +20,9 @@ class ClarificationForm(forms.ModelForm):
         self.instance.owner = self.asker
         self.instance.problem = self.problem
         return super().save(commit=commit)
+
+class AdminClarificationForm(forms.ModelForm):
+    class Meta:
+        model = Clarification
+        fields = [ 'answer' ]
+        widgets = {'answer': forms.widgets.Textarea(attrs={'placeholder':"Type your response here."})}

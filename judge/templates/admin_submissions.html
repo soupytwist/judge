@@ -2,6 +2,12 @@
 {% load bootstrap3 %}
 {% load humanize %}
 
+{% block breadcrumbs %}
+  <li><a href="{% url "index" %}">Home</a></li>
+  <li><a href="{% url "contest_home" contest=contest.slug %}">{{ contest.name }}</a></li>
+  <li class="active">Submissions</li>
+{% endblock %}
+
 {% block content %}
 <hr>
 <h3>All Submissions</h3>
@@ -21,7 +27,7 @@
 {% for attempt in attempts %}
     <tr>
       <td>{{ attempt.owner }}</td>
-      <td>{{ attempt.created_at|naturaltime }}</td>
+      <td><span title="{{ attempt.created_at }}">{{ attempt.created_at|naturaltime }}</span></td>
       <td>{{ attempt.part.problem.name }} - {{ attempt.part.name }}</td>
       <td>{{ attempt.get_status_display }}</td>
       <td>{{ attempt.score }}</td>

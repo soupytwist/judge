@@ -2,13 +2,20 @@
 {% load bootstrap3 %}
 {% load humanize %}
 
+{% block breadcrumbs %}
+  <li><a href="{% url "index" %}">Home</a></li>
+  <li><a href="{% url "contest_home" contest=attempt.part.problem.contest.slug %}">{{ attempt.part.problem.contest.name }}</a></li>
+  <li><a href="{% url "submission_list" contest=attempt.part.problem.contest.slug %}">Submissions</a></li>
+  <li class="active">{{ attempt.owner }} #{{ attmept.id }}</li>
+{% endblock %}
+
 {% block content %}
 <hr>
 <h3>{{ attempt.owner }} &middot; #{{ attempt.id }} &middot; {{ attempt.part.problem.name }} &middot; {{ attempt.part.name }}</h4>
 
 <dl>
     <dt>Time</dt>
-    <dd>{{ attempt.created_at|naturaltime }}</dd>
+    <dd>{{ attempt.created_at }} <small>({{ attempt.created_at|naturaltime }})</small></dd>
     <dt>Status</dt>
     <dd>{{ attempt.get_status_display }}</dd>
     <dt>Reason</dt>
@@ -17,7 +24,8 @@
     <dd>{{ attempt.score }}</dd>
     {% if attempt.reason != 3 %}
     <dt>Diff</dt>
-    <dd><a class="btn btn-default btn-sm" href="{% url "attempt_diff" contest=attempt.part.problem.contest.slug attempt_pk=attempt.id %}">{% bootstrap_icon "align-left" %} View diff</a></dd>
+    <dd><a class="btn btn-default btn-sm" href="{% url "attempt_diff_quick" contest=attempt.part.problem.contest.slug attempt_pk=attempt.id %}" target="_blank">{% bootstrap_icon "indent-right" %}&nbsp; Quick diff</a>
+        <a class="btn btn-default btn-sm" href="{% url "attempt_diff" contest=attempt.part.problem.contest.slug attempt_pk=attempt.id %}" target="_blank">{% bootstrap_icon "align-left" %} Full diff</a></dd>
     {% endif %}
     <dt>Update</dt>
     <dd>

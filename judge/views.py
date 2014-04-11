@@ -7,7 +7,7 @@ import django.contrib.messages
 from django.contrib.messages.views import SuccessMessageMixin
 from judge import models
 from judge.util import score
-from judge.forms import ClarificationForm
+from judge.forms import ClarificationForm, AdminClarificationForm
 from sendfile import sendfile
 from difflib import HtmlDiff
 
@@ -250,7 +250,7 @@ def admin_attempt_override(request, contest=None, attempt_pk=None, action=None):
 
     return redirect(reverse("attempt_detail", kwargs={'contest': contest, 'attempt_pk': attempt_pk}))
 
-def admin_attempt_diff(request, contest=None, attempt_pk=None):
+def admin_attempt_diff(request, contest=None, attempt_pk=None, quick=False):
     if not request.user.is_authenticated or not request.user.is_staff:
         return redirect("/admin/")
 
@@ -258,12 +258,14 @@ def admin_attempt_diff(request, contest=None, attempt_pk=None):
     their_lines = []
     my_lines = []
 
+    sizehint = [512] if quick else []
+
     if attempt.outputfile:
         with open(attempt.outputfile.path) as theirs:
-            their_lines = theirs.readlines()
+            their_lines = theirs.readlines(*sizehint)
 
     with open(attempt.get_outputfile_path()) as mine:
-        my_lines = mine.readlines()
+        my_lines = mine.readlines(*sizehint)
 
     differ = HtmlDiff()
     html = differ.make_file(their_lines, my_lines, fromdesc="User's output", todesc="Judge's output")
@@ -292,7 +294,7 @@ class AdminClarificationList(ListView):
 class AdminClarificationRespond(UpdateView):
     model = models.Clarification
     template_name = "admin_clarification_respond.html"
-    fields = ['answer']
+    form_class = AdminClarificationForm
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated or not request.user.is_staff:

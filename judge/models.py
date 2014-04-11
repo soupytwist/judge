@@ -196,3 +196,6 @@ class Clarification(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     question = models.CharField(max_length=2048)
     answer = models.CharField(max_length=2048, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']

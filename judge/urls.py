@@ -34,6 +34,7 @@ urlpatterns = patterns('',
         url(r'^submissions/attempt/(?P<attempt_pk>\d+)/$', views.AdminAttemptDetail.as_view(), name="attempt_detail"),
         url(r'^submissions/attempt/(?P<attempt_pk>\d+)/override/(?P<action>.+?)/$', views.admin_attempt_override, name="attempt_override"),
         url(r'^submissions/attempt/(?P<attempt_pk>\d+)/diff/$', views.admin_attempt_diff, name="attempt_diff"),
+        url(r'^submissions/attempt/(?P<attempt_pk>\d+)/diff/quick/$', views.admin_attempt_diff, {'quick': True}, name="attempt_diff_quick"),
     ))),
     url(r'^admin/', include(admin.site.urls)),
 ) + staticfiles_urlpatterns()
