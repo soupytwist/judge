@@ -228,6 +228,28 @@ class AdminAttemptDetail(DetailView):
         ctxt['part'] = self.object.part
         return ctxt
 
+class AdminAttemptViewCode(DetailView):
+    model = models.Attempt
+    pk_url_kwarg = 'attempt_pk'
+    template_name = "admin_attempt_code.html"
+    context_object_name = 'attempt'
+    contest = None
+
+    def dispatch(self, *args, **kwargs):
+        self.contest = get_object_or_404(models.Contest, slug=kwargs['contest'])
+        return super().dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctxt = super().get_context_data(**kwargs)
+        ctxt['contest'] = self.contest
+        ctxt['part'] = self.object.part
+        
+        if self.object.sourcefile:
+            with open(self.object.sourcefile.path, 'r') as src:
+                ctxt['src'] = "".join(src.readlines())
+
+        return ctxt
+
 def admin_attempt_override(request, contest=None, attempt_pk=None, action=None):
     if not request.user.is_authenticated or not request.user.is_staff:
         return redirect("/admin/")

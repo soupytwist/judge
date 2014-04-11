@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% load humanize %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/default.min.css">
+<script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+{% endblock %}
+
+{% block breadcrumbs %}
+  <li><a href="{% url "index" %}">Home</a></li>
+  <li><a href="{% url "contest_home" contest=attempt.part.problem.contest.slug %}">{{ attempt.part.problem.contest.name }}</a></li>
+  <li><a href="{% url "submission_list" contest=attempt.part.problem.contest.slug %}">Submissions</a></li>
+  <li><a href="{% url "attempt_detail" contest=attempt.part.problem.contest.slug attempt_pk=attempt.id %}">{{ attempt.owner }} #{{ attempt.id }}</a></li>
+  <li class="active">View source</li>
+{% endblock %}
+
+{% block content %}
+<h2>{{ attempt.part.problem.contest.name }}</h2>
+<hr>
+<h3>{{ attempt.owner }} &middot; #{{ attempt.id }} &middot; {{ attempt.part.problem.name }} &middot; {{ attempt.part.name }}</h4>
+
+<pre id="sourcecode">{{ src|linebreaksbr }}</pre>
+
+<script>
+hljs.highlightBlock(document.getElementById("sourcecode"));
+</script>
+
+{% endblock %}

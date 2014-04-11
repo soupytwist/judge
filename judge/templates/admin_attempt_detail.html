@@ -10,6 +10,8 @@
 {% endblock %}
 
 {% block content %}
+
+<h2>{{ attempt.part.problem.contest.name }}</h2>
 <hr>
 <h3>{{ attempt.owner }} &middot; #{{ attempt.id }} &middot; {{ attempt.part.problem.name }} &middot; {{ attempt.part.name }}</h4>
 
@@ -23,9 +25,10 @@
     <dt>Score</dt>
     <dd>{{ attempt.score }}</dd>
     {% if attempt.reason != 3 %}
-    <dt>Diff</dt>
+    <dt>Submission</dt>
     <dd><a class="btn btn-default btn-sm" href="{% url "attempt_diff_quick" contest=attempt.part.problem.contest.slug attempt_pk=attempt.id %}" target="_blank">{% bootstrap_icon "indent-right" %}&nbsp; Quick diff</a>
-        <a class="btn btn-default btn-sm" href="{% url "attempt_diff" contest=attempt.part.problem.contest.slug attempt_pk=attempt.id %}" target="_blank">{% bootstrap_icon "align-left" %} Full diff</a></dd>
+        <a class="btn btn-default btn-sm" href="{% url "attempt_diff" contest=attempt.part.problem.contest.slug attempt_pk=attempt.id %}" target="_blank">{% bootstrap_icon "align-left" %} Full diff</a>
+        <a class="btn btn-default btn-sm" {{ attempt.sourcefile|yesno:",disabled" }} href="{% url "attempt_code" contest=attempt.part.problem.contest.slug attempt_pk=attempt.id %}">{% bootstrap_icon "list-alt" %} View Source</a></dd>
     {% endif %}
     <dt>Update</dt>
     <dd>
