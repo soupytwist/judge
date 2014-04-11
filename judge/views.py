@@ -265,7 +265,7 @@ def admin_attempt_diff(request, contest=None, attempt_pk=None):
     with open(attempt.get_outputfile_path()) as mine:
         my_lines = mine.readlines()
 
-    differ = HtmlDiff(autojunk=False)
+    differ = HtmlDiff()
     html = differ.make_file(their_lines, my_lines, fromdesc="User's output", todesc="Judge's output")
 
     return HttpResponse(html, content_type="text/html")
