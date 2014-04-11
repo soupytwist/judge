@@ -30,6 +30,7 @@
           <div id="timer-wrapper">Time remaining: <span id="timer">-:--</span></div>
         </div>
         <div class="panel-body">
+        {% if attempt.status == 1 %}
           <div class="row">
           {% bootstrap_field form.outputfile layout="horizontal" %}
           </div>
@@ -41,6 +42,9 @@
               <input class="btn btn-primary" role="button" type="submit" value="Submit">
             </div>
           </div>
+        {% else %}
+          <p> This attempt has expired! </p>
+        {% endif %}
         </div>
       </div>
     </form>

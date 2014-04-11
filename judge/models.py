@@ -154,7 +154,7 @@ class Attempt(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(choices=CHOICES_STATUS, default=1)
     score = models.IntegerField(default=0)
-    reason = models.IntegerField(choices=CHOICES_REASON, null=True)
+    reason = models.IntegerField(choices=CHOICES_REASON, default=1, null=True)
     testfileid = models.IntegerField()
     outputfile = models.FileField("Ouptut File", upload_to=partial(get_upload_path, 'out'), null=True, blank=True)
     sourcefile = models.FileField("Source File", upload_to=partial(get_upload_path, 'src'), null=True, blank=True)
