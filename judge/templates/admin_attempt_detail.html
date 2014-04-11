@@ -15,8 +15,10 @@
     <dd>{{ attempt.get_reason_display }}</dd>
     <dt>Score</dt>
     <dd>{{ attempt.score }}</dd>
+    {% if attempt.reason != 3 %}
     <dt>Diff</dt>
     <dd><a class="btn btn-default btn-sm" href="{% url "attempt_diff" contest=attempt.part.problem.contest.slug attempt_pk=attempt.id %}">{% bootstrap_icon "align-left" %} View diff</a></dd>
+    {% endif %}
     <dt>Update</dt>
     <dd>
     <a class="btn btn-success btn-sm" href="{% url "attempt_override" contest=attempt.part.problem.contest.slug attempt_pk=attempt.id action="correct" %}">{% bootstrap_icon "ok" %} Mark Correct</a>
