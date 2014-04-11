@@ -6,7 +6,7 @@
   <li><a href="{% url "index" %}">Home</a></li>
   <li><a href="{% url "contest_home" contest=attempt.part.problem.contest.slug %}">{{ attempt.part.problem.contest.name }}</a></li>
   <li><a href="{% url "submission_list" contest=attempt.part.problem.contest.slug %}">Submissions</a></li>
-  <li class="active">{{ attempt.owner }} #{{ attmept.id }}</li>
+  <li class="active">{{ attempt.owner }} #{{ attempt.id }}</li>
 {% endblock %}
 
 {% block content %}
