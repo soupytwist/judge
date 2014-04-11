@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% load humanize %}
+
+{% block content %}
+<hr>
+<h3>{{ attempt.owner }} &middot; #{{ attempt.id }} &middot; {{ attempt.part.problem.name }} &middot; {{ attempt.part.name }}</h4>
+
+<dl>
+    <dt>Time</dt>
+    <dd>{{ attempt.created_at|naturaltime }}</dd>
+    <dt>Status</dt>
+    <dd>{{ attempt.get_status_display }}</dd>
+    <dt>Reason</dt>
+    <dd>{{ attempt.get_reason_display }}</dd>
+    <dt>Score</dt>
+    <dd>{{ attempt.score }}</dd>
+    <dt>Diff</dt>
+    <dd><a class="btn btn-default btn-sm" href="{% url "attempt_diff" contest=attempt.part.problem.contest.slug attempt_pk=attempt.id %}">{% bootstrap_icon "align-left" %} View diff</a></dd>
+    <dt>Update</dt>
+    <dd>
+    <a class="btn btn-success btn-sm" href="{% url "attempt_override" contest=attempt.part.problem.contest.slug attempt_pk=attempt.id action="correct" %}">{% bootstrap_icon "ok" %} Mark Correct</a>
+    <a class="btn btn-danger btn-sm" href="{% url "attempt_override" contest=attempt.part.problem.contest.slug attempt_pk=attempt.id action="wrong" %}">{% bootstrap_icon "remove" %} Mark Incorrect</a>
+    <a class="btn btn-info btn-sm" href="{% url "attempt_override" contest=attempt.part.problem.contest.slug attempt_pk=attempt.id action="auto" %}">{% bootstrap_icon "refresh" %} Rescore</a>
+    </dd>
+</dt>
+
+{% endblock %}

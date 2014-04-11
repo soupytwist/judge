@@ -14,6 +14,7 @@
       <th>Status</th>
       <th>Score</th>
       <th>Reason</th>
+      <th></th>
     </tr>
   </thead>
   <tbodY>
@@ -25,10 +26,11 @@
       <td>{{ attempt.get_status_display }}</td>
       <td>{{ attempt.score }}</td>
       <td>{{ attempt.get_reason_display }}</td>
+      <td><a href="{% url "attempt_detail" contest=attempt.part.problem.contest.slug attempt_pk=attempt.id %}">view</a></td>
     </tr>
 {% empty %}
     <tr>
-      <td class="table-empty-message" colspan="5">There are no submissions yet.</td>
+      <td class="table-empty-message" colspan="7">There are no submissions yet.</td>
     </tr>
 {% endfor %}
   </tbody>

@@ -228,6 +228,28 @@ class AdminAttemptDetail(DetailView):
         ctxt['part'] = self.object.part
         return ctxt
 
+def admin_attempt_override(request, contest=None, attempt_pk=None, action=None):
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return redirect("/admin/")
+
+    attempt = get_object_or_404(models.Attempt, pk=attempt_pk)
+    
+    if action == "correct":
+        attempt.status = models.Attempt.CORRECT
+        attempt.reason = models.Attempt.SCORED_MANUALLY
+        attempt.score = attempt.part.points
+        attempt.save()
+    elif action == "wrong":
+        attempt.status = models.Attempt.INCORRECT
+        attempt.reason = models.Attempt.SCORED_MANUALLY
+        attempt.score = 0
+        attempt.save()
+    elif action == "auto":
+        score(attempt)
+        attempt.save()
+
+    return redirect(reverse("attempt_detail", kwargs={'contest': contest, 'attempt_pk': attempt_pk}))
+
 def admin_attempt_diff(request, contest=None, attempt_pk=None):
     if not request.user.is_authenticated or not request.user.is_staff:
         return redirect("/admin/")
@@ -243,7 +265,7 @@ def admin_attempt_diff(request, contest=None, attempt_pk=None):
     with open(attempt.get_outputfile_path()) as mine:
         my_lines = mine.readlines()
 
-    differ = HtmlDiff()
+    differ = HtmlDiff(autojunk=False)
     html = differ.make_file(their_lines, my_lines, fromdesc="User's output", todesc="Judge's output")
 
     return HttpResponse(html, content_type="text/html")

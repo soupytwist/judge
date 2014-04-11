@@ -17,12 +17,13 @@ def get_upload_path(ft, instance, filename):
         except ValueError:
             ext = ".src"
 
-    problem = instance.part.problem
+    part = instance.part
+    problem = part.problem
     contest = problem.contest
 
     return os.path.join(settings.SUBMISSION_DIR,
             "%d-%s" % (contest.id, contest.slug), instance.owner.username,
-            "%s_%d%s" % (problem.slug, instance.testfileid, ext))
+            "%s_%s-%d%s" % (problem.slug, part.name, instance.testfileid, ext))
 
 def get_problem_directory(instance, filename):
     contest = instance.contest
@@ -138,12 +139,14 @@ class Attempt(models.Model):
     WRONG_ANSWER = 2
     TIMEOUT = 3
     BAD_SUBMISSION = 4
+    SCORED_MANUALLY = 5
 
     CHOICES_REASON = (
         (ACCEPTED, "Accepted"),
         (WRONG_ANSWER, "Wrong Answer"),
         (TIMEOUT, "Time Limit Exceeded"),
         (BAD_SUBMISSION, "Bad Submission"),
+        (SCORED_MANUALLY, "Scored Manually"),
     )
 
     owner = models.ForeignKey(User, related_name="attempts")
