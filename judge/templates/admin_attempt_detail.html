@@ -16,6 +16,8 @@
 <h3>{{ attempt.owner }} &middot; #{{ attempt.id }} &middot; {{ attempt.part.problem.name }} &middot; {{ attempt.part.name }}</h4>
 
 <dl>
+    <dt>Test File #</dt>
+    <dd>{{ attempt.testfileid }}</dd>
     <dt>Time</dt>
     <dd>{{ attempt.created_at }} <small>({{ attempt.created_at|naturaltime }})</small></dd>
     <dt>Status</dt>

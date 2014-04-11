@@ -165,7 +165,7 @@ class Attempt(models.Model):
 
     def save(self):
         if self.testfileid is None:
-            self.testfileid = Attempt.objects.filter(part=self.part).count()
+            self.testfileid = Attempt.objects.filter(part=self.part).count() % 10000
         if not self.randomness:
             self.randomness = "".join(random.choice(string.ascii_letters+string.digits) for i in range(16))
         return super().save()

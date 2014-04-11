@@ -134,8 +134,10 @@ def download_inputfile(request, randomness=None, **kwargs):
 
     if randomness != attempt.randomness:
         return HttpResponseNotFound("404 Not Found")
-
-    return sendfile(request, path, attachment=True, attachment_filename=attempt.part.name+".txt")
+    
+    number = models.Attempt.objects.filter(owner=request.user, part=attempt.part).count()
+    attachment_filename = "%s-%d.txt" % (attempt.part.name, number)
+    return sendfile(request, path, attachment=True, attachment_filename=attachment_filename)
 
 def download_pdf(request, contest=None, slug=None, attach=True, **kwargs):
     problem = get_object_or_404(models.Problem, contest__slug=contest, slug=slug)

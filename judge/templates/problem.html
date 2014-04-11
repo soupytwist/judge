@@ -15,7 +15,7 @@
 <h2>{{ problem.contest.name }}</h2>
 {% problem_score problem as score %}
 
-<div id="problem-header">
+<div id="problem-header" class="clearfix">
     <h3><a href="{% url "problem_home" contest=problem.contest.slug slug=problem.slug %}">
       {{ problem }}
     </a></h3>
