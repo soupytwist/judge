@@ -30,7 +30,7 @@
     {% if competing or contest.has_ended %}
     <div class="list-group">
       {% if contest.has_begun or request.user.is_staff %}
-      {% if request.user.is_staff %}
+      {% if request.user.is_staff and not contest.has_begun %}
       <div class="alert alert-warning">These are only visible to you because you are logged in as an administrator.</div>
       {% endif %}
         {% for problem in contest.problems.all %}
