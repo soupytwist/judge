@@ -345,6 +345,6 @@ def scoreboard(request, contest=None):
     for team in teams:
         team.score = obj.get_score(team)
 
-    teams = sorted(teams, key=lambda t: t.score)
+    teams = sorted(teams, key=lambda t: -t.score)
 
     return render(request, "scoreboard.html", {'teams': teams, 'contest': obj, 'shownames': obj.has_ended() or request.user.is_staff})
