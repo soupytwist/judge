@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseNotFound
 from django.views.generic import DetailView, ListView, CreateView, UpdateView
@@ -336,3 +336,15 @@ class AdminClarificationRespond(UpdateView):
         return reverse("clarification_list", kwargs={
             'contest': self.contest.slug,
         })
+
+def scoreboard(request, contest=None):
+    obj = get_object_or_404(models.Contest, slug=contest)
+
+
+    teams = obj.contestants.all()
+    for team in teams:
+        team.score = obj.get_score(team)
+
+    teams = sorted(teams, key=lambda t: t.score)
+
+    return render(request, "scoreboard.html", {'teams': teams, 'contest': obj, 'shownames': obj.has_ended() or request.user.is_staff})
