@@ -7,15 +7,19 @@
 {% if request.user.is_authenticated %}
 
 <h3>My Contests</h3>
+<ul class="list-group">
 {% for contest in request.user.contests.all %}
-<a href="{% url 'contest_home' contest=contest.slug %}">{{ contest.name }}</a>
+<li class="list-group-item"><a href="{% url 'contest_home' contest=contest.slug %}">{{ contest.name }}</a></li>
 {% endfor %}
+</ul>
 
 {% endif %}
 
 <h3>Upcoming Contests</h3>
+<ul class="list-group">
 {% for contest in object_list %}
-<a href="{% url 'contest_home' contest=contest.slug %}">{{ contest.name }}</a>
+<li class="list-group-item"><a href="{% url 'contest_home' contest=contest.slug %}">{{ contest.name }}</a></li>
 {% endfor %}
+</ul>
 
 {% endblock %}
